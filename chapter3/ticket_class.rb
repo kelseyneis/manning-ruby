@@ -2,9 +2,18 @@
 
 # Ticket class, demonstrating instance methods (i.e. event)
 class Ticket
+  # Constants
+  VENUES = ['Convention Center', 'Fairgrounds', 'Town Hall']
   # attr_accessor combines attr_reader and attr_writer!
-  attr_accessor :venue
-  attr_reader :date, :price
+  def initialize(venue)
+    if VENUES.include?(venue)
+      @venue = venue
+    else
+      raise ArgumentError, "Unknown venue #{venue}"
+    end
+  end
+
+  attr_reader :date, :price, :venue
 
   def date=(date)
     @date = date.match(/\d{4}-\d{2}-\d{2}/) ? date : (puts 'Please format date yyyy-mm-dd')
@@ -20,15 +29,25 @@ class Ticket
 
 end
 
-ticket = Ticket.new
-ticket.venue = 'some theater'
+Ticket::VENUES << 'High School Gym'
+
+puts 'The venues are:'
+puts Ticket::VENUES
+
+ticket = Ticket.new('Convention Center')
 ticket.date = '2021-02-04'
 ticket.price = 7.00
 ticket.discount(15)
 
-ballet = Ticket.new
-ballet.venue = 'some other theater'
+ballet = Ticket.new('Fairgrounds')
 ballet.price = 9.00
+
+# Class singleton method. Unlike instance methods, such as date, price and venue above, these are called on the class itself (Ticket) rather than on an instance of the class (ticket, ballet)
+def Ticket.most_expensive(*tickets)
+  tickets.max_by(&:price)
+end
+
+puts "The highest price ticket is at #{Ticket.most_expensive(ticket, ballet).venue}"
 
 puts "The first is for a #{ticket.venue} event on #{ticket.date}, costing $#{"%.2f" % ticket.price}."
 puts "The second is for an event on #{ballet.date} at #{ballet.venue}, costing $#{"%.2f" % ballet.price}."
